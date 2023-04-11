@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE Example</title>
+</head>
+<body>
+<div style="padding: 10px;position: sticky; top: 0;background-color: #fff;">
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+    <button id="clearButton">Clear</button>
+</div>
+<div id="messages"></div>
+
+<script>
+    const source = "http://localhost:3000/?stream=messages";
+    const messages = document.querySelector("#messages");
+    const startButton = document.querySelector("#startButton");
+    const stopButton = document.querySelector("#stopButton");
+    const clearButton = document.querySelector("#clearButton");
+    const body = document.querySelector("body");
+    let eventSource = null;
+
+    startButton.addEventListener("click", () => {
+        console.log("clicked")
+        eventSource = new EventSource(source);
+        eventSource.onmessage = (event) => {
+            console.log(event);
+            window.scrollTo(0, body.scrollHeight);
+            messages.innerHTML += `<p>${event.data}</p>`;
+        };
+    });
+
+    stopButton.addEventListener("click", () => {
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+    });
+
+    clearButton.addEventListener("click", () => messages.innerHTML = null);
+</script>
+</body>
+</html>
